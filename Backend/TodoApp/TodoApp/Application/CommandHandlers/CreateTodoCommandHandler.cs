@@ -9,6 +9,7 @@ namespace TodoApp.Application.CommandHandlers
     {
         private readonly TodoListContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string branchTest;
 
         public CreateTodoCommandHandler(TodoListContext context, IHttpContextAccessor httpContextAccessor)
         {
