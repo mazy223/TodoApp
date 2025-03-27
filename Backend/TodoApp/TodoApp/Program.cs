@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using TodoApp.Entity.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,19 +49,30 @@ builder.Services.AddAuthentication(x  =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddIdentityCore<User>(options =>
+{
+    options.SignIn.RequireConfirmedEmail = false;
+})
+    .AddRoles<Role>()
+    .AddEntityFrameworkStores<TodoListContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
 // Add services to the container.
 builder.Services.AddScoped<CreateTodoCommandHandler>();
 builder.Services.AddScoped<RemoveTodoCommandHandler>();
 builder.Services.AddScoped<UpdateTodoCommandHandler>();
 builder.Services.AddScoped<GetTodosQueryHandler>();
 builder.Services.AddScoped<GetTodoByIdQueryHandler>();
+builder.Services.AddScoped<GetAllTodosQueryHandler>();
 
 builder.Services.AddScoped<RegisterCommandHandler>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<TodoListContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -110,5 +123,7 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+
+// app.MapIdentityApi<User>();
 
 app.Run();

@@ -1,16 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoApp.Entity.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using TodoApp.SeedConfig;
 
 namespace TodoApp.Entity.EntityConfiguration
 {
     public class TodoListContext(DbContextOptions<TodoListContext> options) :
-        DbContext(options)
+        IdentityDbContext<User,Role, string>(options)
     {
         public DbSet<Todo> Todos => Set<Todo>();
-        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+
             modelBuilder.Entity<Todo>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -36,25 +42,10 @@ namespace TodoApp.Entity.EntityConfiguration
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.FirstName)
-                    .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(100);
-
-                entity.Property(e => e.PasswordHash)
-                    .IsRequired();
-
-                entity.Property(e => e.Role)
-                    .IsRequired()
                     .HasMaxLength(50);
             });
         }

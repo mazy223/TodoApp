@@ -3,6 +3,7 @@ import TodoPage from "./components/TodoPage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Register from "./components/Register";
 import { useState } from "react";
+import AdminPage from "./components/AdminPage";
 
 function App() {
   /* Axios.get("https://localhost:7028/api/todo")
@@ -27,6 +28,12 @@ function App() {
         <TodoPage token={token}/>
       ),
     },
+    {
+      path: "/adminPage",
+      element: (
+        <AdminPage />
+      )
+    }
   ]);
 
   return (

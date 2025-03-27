@@ -14,13 +14,13 @@ namespace TodoApp.Application.CommandHandlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private int GetUserId()
+        private string GetUserId()
         {
             var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null)
                 throw new UnauthorizedAccessException("User not found");
 
-            return int.Parse(userIdClaim);
+            return userIdClaim;
         }
 
         public async Task<IResult> Handle(int id)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,15 @@ namespace TodoApp.Controllers
             private readonly TodoListContext _context;
             private readonly JwtService _jwtService;
             private readonly RegisterCommandHandler _registerCommandHandler;
+            private readonly UserManager<User> _userManager;
 
-            public AuthController(TodoListContext context, IConfiguration configuration, RegisterCommandHandler registerCommandHandler)
+            public AuthController(TodoListContext context, IConfiguration configuration, RegisterCommandHandler registerCommandHandler
+                ,UserManager<User> userManager)
             {
                 _context = context;
                 _jwtService = new JwtService(configuration);
                 _registerCommandHandler = registerCommandHandler;
+                _userManager = userManager;
             }
 
             [HttpPost("register")]
@@ -44,7 +48,8 @@ namespace TodoApp.Controllers
                 return Unauthorized(new { message = "Geçersiz e-posta veya şifre." });
             }
 
-            var token = _jwtService.GenerateToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtService.GenerateToken(user,roles);
 
             var cookieOptions = new CookieOptions
             {

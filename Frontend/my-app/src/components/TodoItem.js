@@ -21,13 +21,14 @@ function TodoItem({ todo, onEditClick, onDeleteClick, toggleCompleteStatus}) {
     }
     
     return (
+      
       <tr style={{textDecoration: todo.completeStatus ? "line-through" : "none"}}>
         <td>
           <span className="custom-checkbox">
             <input 
               type="checkbox" 
               id={`checkbox${todo.id}`} 
-              checked={todo.completeStatus}
+              checked={todo.completeStatus ?? false}
               onChange={handleCompleteStatus}
               />
             <label htmlFor={`checkbox${todo.id}`} ></label>

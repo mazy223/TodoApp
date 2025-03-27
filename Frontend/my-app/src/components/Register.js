@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../styles/login.css";
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import * as Yup from 'yup';
 
 function Register() {
   const [user,setUser] = useState({
@@ -12,10 +13,34 @@ function Register() {
       });
 
       const [errors, setErrors] = useState({});
+      
+      const validationSchema = Yup.object({
+        firstName:Yup.string()
+          .trim()
+          .matches(/^[A-Za-z\s]+$/, "First name cannot contain numbers or special characters")
+          .min(3, "First name must be at least 3 characters")
+          .required("First name is required")
+          .max(25, "First name must be at most 25 characters")
+          ,
+        lastName: Yup.string()
+          .trim()
+          .matches(/^[A-Za-z\s]+$/, "Last name cannot contain numbers or special characters")
+          .min(3, "Last name must be at least 3 characters")
+          .required("Last Name is required")
+          .max(25, "Last name must be at most 25 characters"),
+
+        email: Yup.string()
+          .email("Invalid email format")
+          .required("Email is required"),
+        password: Yup.string()
+          .required("Password is required")
+          .min(6,"Password must be at least 6 characters")
+          .max(20, "Password cannot exceed 50 characters")
+      })
 
       const navigate = useNavigate();
 
-      function validateForm() 
+      /* function validateForm() 
       {
         const newErrors = {};
 
@@ -43,7 +68,7 @@ function Register() {
 
     // Eğer hata yoksa formu gönderebiliriz
     return Object.keys(newErrors).length === 0;
-      }
+      } */
 
       function handleChange(e)
       {
@@ -55,19 +80,32 @@ function Register() {
           }));
       }
 
-      function handleRegister(e)
+      async function handleRegister(e)
       {
         e.preventDefault();
 
-        if(!validateForm()) return;
-        axiosInstance.post("/auth/register",user)
+        try{
+          await validationSchema.validate(user, {abortEarly:false});
+          setErrors({});
+          axiosInstance.post("/auth/register",user)
             .then((res) => {
-                console.log("Kullanici basariyla olusturuldu");
                 navigate('/');
             })
             .catch((err) => {
               console.log(`Hata olustu ${err}`);
-            })
+            }) 
+        }
+        catch(error)
+        {
+          const newErrors = {}
+
+          error.inner.forEach(err => {
+            newErrors[err.path] = err.message;
+          });
+
+          setErrors(newErrors);
+        }
+        
       }
   return (
     <div className="login-body">
@@ -86,7 +124,7 @@ function Register() {
             onChange={handleChange}
             name="firstName"
             value={user.firstName}
-            required />
+            />
             <label htmlFor="reg-firstName" className="label">
               First Name
             </label>
@@ -99,7 +137,7 @@ function Register() {
             id="reg-lastName" 
             name="lastName"
             value={user.lastName}
-            onChange={handleChange} required />
+            onChange={handleChange} />
             <label htmlFor="reg-lastName" className="label">
               Last Name
             </label>
@@ -113,7 +151,7 @@ function Register() {
               name="email"
               value={user.email}
               onChange={handleChange}
-              required
+              
             />
             <label htmlFor="reg-email" className="label">
               Email
@@ -129,7 +167,6 @@ function Register() {
               name="password"
               value={user.password}
               id="reg-pass"
-              required
             />
             <label htmlFor="reg-pass" className="label">
               Password

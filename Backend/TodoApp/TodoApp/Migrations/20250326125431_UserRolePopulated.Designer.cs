@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoApp.Entity.EntityConfiguration;
 
@@ -11,9 +12,11 @@ using TodoApp.Entity.EntityConfiguration;
 namespace TodoApp.Migrations
 {
     [DbContext(typeof(TodoListContext))]
-    partial class TodoListContextModelSnapshot : ModelSnapshot
+    [Migration("20250326125431_UserRolePopulated")]
+    partial class UserRolePopulated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,8 +114,8 @@ namespace TodoApp.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "a7b769f5-a787-46f9-b87f-67c65ec24e33",
-                            RoleId = "558d3def-38b2-4bba-85bd-adb649322e63"
+                            UserId = "0f3a63ba-d9de-4f3f-8064-b3dc0c0231b4",
+                            RoleId = "asfasfasfasfsa1"
                         });
                 });
 
@@ -167,15 +170,15 @@ namespace TodoApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "cfbee6ed-74e3-4060-869a-6c3eaf871236",
+                            Id = "asfasfasfasfsa1",
                             Description = "User role",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "558d3def-38b2-4bba-85bd-adb649322e63",
-                            Description = "Admin role",
+                            Id = "sfasfasg21r21fr",
+                            Description = "Admi role",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

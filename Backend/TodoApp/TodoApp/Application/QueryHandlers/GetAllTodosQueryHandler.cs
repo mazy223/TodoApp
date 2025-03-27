@@ -1,38 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using TodoApp.Entity.EntityConfiguration;
 using TodoApp.Entity.ItemDTOs;
 
 namespace TodoApp.Application.QueryHandlers
 {
-    public class GetTodosQueryHandler
+    public class GetAllTodosQueryHandler
     {
         private readonly TodoListContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GetTodosQueryHandler(TodoListContext context, IHttpContextAccessor httpContextAccessor)
+        public GetAllTodosQueryHandler(TodoListContext context)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public string GetUserId()
-        {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("User not found");
-
-            return userIdClaim;
         }
 
         public async Task<IResult> Handle()
         {
-
             try
             {
-                var userId = GetUserId();
                 var todos = await _context.Todos
-                    .Where(t => t.UserId == userId)
                     .Select(t => new TodoDetailsDto
                     {
                         Id = t.Id,

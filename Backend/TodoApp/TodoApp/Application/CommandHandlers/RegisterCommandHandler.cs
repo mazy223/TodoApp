@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Entity.Entities;
 using TodoApp.Entity.EntityConfiguration;
@@ -10,10 +11,12 @@ namespace TodoApp.Application.CommandHandlers
     public class RegisterCommandHandler
     {
         private readonly TodoListContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public RegisterCommandHandler(TodoListContext context)
+        public RegisterCommandHandler(TodoListContext context,UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
        public async Task<IResult> Handle(RegisterUserDto request)
@@ -29,9 +32,8 @@ namespace TodoApp.Application.CommandHandlers
                 LastName = request.LastName,
                 Email = request.Email,
                 PasswordHash = PasswordHasher.HashPassword(request.Password), // Şifreyi güvenli hale getiriyoruz
-                Role = "user" // Varsayılan rol
             };
-
+            await _userManager.AddToRoleAsync(user, "user");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

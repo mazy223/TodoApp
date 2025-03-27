@@ -13,9 +13,7 @@ function TodoPage()
 {
     const token = localStorage.getItem('token');
     const [todos, setTodos] = useState([]);
-    const config = {
-      headers : { Authorization : `Bearer ${token}`}
-    }
+
 
     useEffect(() => {
       Axios.get("https://localhost:7028/api/todo", {withCredentials: true , headers: {Authorization: `Bearer ${token}`}})
@@ -26,7 +24,7 @@ function TodoPage()
         .catch((err) => {
           console.log("Hata oluştu");
         });
-    }, []);
+    }, [token]);
     
     const navigate = useNavigate();
     
@@ -35,7 +33,7 @@ function TodoPage()
       const [selectedTodo, setSelectedTodo] = useState(null);
       const [selectedTodos, setSelectedTodos] = useState([]);
       const [currentPage, setCurrentPage] = useState(1);
-      const itemsPerPage = 3;
+      const itemsPerPage = 10;
     
       const indexOfLastTodo = currentPage * itemsPerPage;
       const indexOfFirstTodo = indexOfLastTodo - itemsPerPage;
@@ -66,7 +64,6 @@ function TodoPage()
               const newTodoDetails = res.data;
               setTodos((prevTodos) => {
                 const updatedTodos = [...prevTodos, newTodoDetails]; // Yeni todo'yu ekliyoruz
-                const totalPages = Math.ceil(updatedTodos.length / itemsPerPage); // Toplam sayfa sayısını hesapla
     
                 // Eğer mevcut sayfa, toplam sayfa sayısına eşitse (son sayfadaysak) bir sonraki sayfaya geç
                 if (currentPage < Math.ceil(updatedTodos.length / itemsPerPage)) {
@@ -95,7 +92,6 @@ function TodoPage()
       function editTodo(updatedTodo) {
         axiosInstance.put(`/todo/${updatedTodo.id}`,{title: updatedTodo.title, description: updatedTodo.description, isCompleted:updatedTodo.completeStatus},{withCredentials: true , headers: {Authorization: `Bearer ${token}`}})
             .then((res) => {
-              console.log("Guncelleme basarili");
               setTodos((prevTodos) =>
                 prevTodos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
               );
@@ -116,7 +112,6 @@ function TodoPage()
               headers: { Authorization: `Bearer ${token}` }
           })
           .then((res) => {
-              console.log("Silme basarili");
       
               setTodos((prevTodos) => {
                   const updatedTodos = prevTodos.filter((e) => e.id !== todo.id); // Güncel todo listesi
@@ -154,9 +149,8 @@ function TodoPage()
       function toggleCompletion(checkedTodo) {
         axiosInstance.put(`/todo/${checkedTodo.id}`,{title: checkedTodo.title, description: checkedTodo.description, isCompleted: !checkedTodo.completeStatus},{withCredentials: true , headers: {Authorization: `Bearer ${token}`}})
             .then((res) => {
-              console.log("Todo isaretlendi");
-              setTodos(
-                todos.map((todo) =>
+              setTodos((prevTodos) =>
+                prevTodos.map((todo) =>
                   todo.id === checkedTodo.id
                     ? { ...todo, completeStatus: !todo.completeStatus }
                     : todo
